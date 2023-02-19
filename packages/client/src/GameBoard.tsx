@@ -15,22 +15,22 @@ export const GameBoard = () => {
 
   const playerPosition = useComponentValue(Position, playerEntity);
 
+  const moveTo = async (x: number, y: number) => {
+    const positionId = uuid();
+    Position.addOverride(positionId, {
+      entity: playerEntity,
+      value: { x, y },
+    });
+
+    try {
+      const tx = await systems["system.Move"].executeTyped({ x, y });
+      await tx.wait();
+    } finally {
+      Position.removeOverride(positionId);
+    }
+  };
+
   useEffect(() => {
-    const moveTo = async (x: number, y: number) => {
-      const positionId = uuid();
-      Position.addOverride(positionId, {
-        entity: playerEntity,
-        value: { x, y },
-      });
-
-      try {
-        const tx = await systems["system.Move"].executeTyped({ x, y });
-        await tx.wait();
-      } finally {
-        Position.removeOverride(positionId);
-      }
-    };
-
     const moveBy = async (deltaX: number, deltaY: number) => {
       if (!playerPosition) {
         console.warn(
@@ -71,9 +71,8 @@ export const GameBoard = () => {
               gridColumn: x + 1,
               gridRow: y + 1,
             }}
-            onClick={(event) => {
-              event.preventDefault();
-              systems["system.Move"].executeTyped({ x, y });
+            onClick={async () => {
+              await moveTo(x,y)
             }}
           >
       {playerPosition?.x === x && playerPosition?.y === y ? <>🤠</> : null}
