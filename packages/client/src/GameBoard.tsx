@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { useComponentValue } from "@latticexyz/react";
+import { uuid } from "@latticexyz/utils";
 import { useMUD } from "./MUDContext";
 
 export const GameBoard = () => {
@@ -16,8 +17,18 @@ export const GameBoard = () => {
 
   useEffect(() => {
     const moveTo = async (x: number, y: number) => {
-      const tx = await systems["system.Move"].executeTyped({ x, y });
-      await tx.wait();
+      const positionId = uuid();
+      Position.addOverride(positionId, {
+        entity: playerEntity,
+        value: { x, y },
+      });
+
+      try {
+        const tx = await systems["system.Move"].executeTyped({ x, y });
+        await tx.wait();
+      } finally {
+        Position.removeOverride(positionId);
+      }
     };
 
     const moveBy = async (deltaX: number, deltaY: number) => {

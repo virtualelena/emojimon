@@ -4,7 +4,7 @@ import { config } from "./config";
 import { components, clientComponents } from "./components";
 import { world } from "./world";
 import { SystemAbis } from "contracts/types/SystemAbis.mjs";
-import { EntityID } from "@latticexyz/recs";
+import { EntityID, overridableComponent } from "@latticexyz/recs";
 import {
   createFaucetService,
   GodID as singletonEntityId,
@@ -32,6 +32,11 @@ export const setup = async () => {
 
   const playerEntityId = address as EntityID;
   const playerEntity = world.registerEntity({ id: playerEntityId });
+
+  // Add support for optimistic rendering
+  const componentsWithOverrides = {
+    Position: overridableComponent(components.Position),
+  };
 
   // Request drip from faucet
   if (!config.devMode && config.faucetServiceUrl) {
@@ -66,6 +71,7 @@ export const setup = async () => {
     playerEntity,
     components: {
       ...result.components,
+      ...componentsWithOverrides,
       ...clientComponents,
     },
   };
