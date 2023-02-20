@@ -2,11 +2,13 @@ import { useComponentValue } from "@latticexyz/react";
 import { useMUD } from "./MUDContext";
 import { useMovement } from "./useMovement";
 import { useJoinGame } from "./useJoinGame";
+import { useMapConfig } from "./useMapConfig";
 
 export const GameBoard = () => {
-  const rows = new Array(10).fill(0).map((_, i) => i);
-  const columns = new Array(10).fill(0).map((_, i) => i);
-
+  const { width, height } = useMapConfig();
+  const rows = new Array(height).fill(0).map((_, i) => i);
+  const columns = new Array(width).fill(0).map((_, i) => i);
+  
   const {
     components: { Position },
     playerEntity,
