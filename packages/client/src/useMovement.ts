@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useMemo } from "react";
-import { useComponentValueStream } from "@latticexyz/std-client";
+import { useComponentValue } from "@latticexyz/react";
 import { uuid } from "@latticexyz/utils";
 import { useMUD } from "./MUDContext";
+import { useMapConfig } from "./useMapConfig";
 
 export const useMovement = () => {
   const {
@@ -10,15 +11,22 @@ export const useMovement = () => {
     playerEntity,
   } = useMUD();
 
-  const playerPosition = useComponentValueStream(Position, playerEntity);
+  const { width, height } = useMapConfig();
+  const playerPosition = useComponentValue(Position, playerEntity);
 
   const moveTo = useCallback(
     async (x: number, y: number) => {
-      const positionId = uuid();
-      Position.addOverride(positionId, {
-        entity: playerEntity,
-        value: { x, y },
-      });
+        const wrappedX = (x + width) % width;
+        const wrappedY = (y + height) % height;
+
+        const positionId = uuid();
+        Position.addOverride(positionId, {
+          entity: playerEntity,
+          value: {
+            x: wrappedX,
+            y: wrappedY,
+          },
+        });
 
       try {
         const tx = await systems["system.Move"].executeTyped({ x, y });
@@ -27,7 +35,7 @@ export const useMovement = () => {
         Position.removeOverride(positionId);
       }
     },
-    [Position, playerEntity, systems]
+    [Position, height, playerEntity, systems, width]
   );
 
   const moveBy = useCallback(
