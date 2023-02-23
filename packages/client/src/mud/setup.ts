@@ -4,12 +4,12 @@ import { config } from "./config";
 import { components, clientComponents } from "./components";
 import { world } from "./world";
 import { SystemAbis } from "contracts/types/SystemAbis.mjs";
+import { EntityID, overridableComponent } from "@latticexyz/recs";
 import {
   createFaucetService,
   GodID as singletonEntityId,
 } from "@latticexyz/network";
 import { ethers } from "ethers";
-import { EntityID, overridableComponent } from "@latticexyz/recs";
 
 export type SetupResult = Awaited<ReturnType<typeof setup>>;
 
@@ -18,10 +18,7 @@ export const setup = async () => {
     config,
     world,
     components,
-    SystemAbis,
-    {
-      fetchSystemCalls: true,
-    }
+    SystemAbis
   );
 
   result.startSync();
@@ -35,6 +32,12 @@ export const setup = async () => {
 
   const playerEntityId = address as EntityID;
   const playerEntity = world.registerEntity({ id: playerEntityId });
+
+  // Add support for optimistic rendering
+  const componentsWithOverrides = {
+    Position: overridableComponent(components.Position),
+    Player: overridableComponent(components.Player),
+  };
 
   // Request drip from faucet
   if (!config.devMode && config.faucetServiceUrl) {
@@ -59,12 +62,6 @@ export const setup = async () => {
     // Request a drip every 20 seconds
     setInterval(requestDrip, 20000);
   }
-
-  // Add support for optimistic rendering
-  const componentsWithOverrides = {
-    Position: overridableComponent(components.Position),
-    Player: overridableComponent(components.Player),
-  };
 
   return {
     ...result,

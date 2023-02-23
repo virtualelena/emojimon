@@ -5,18 +5,18 @@ import { useJoinGame } from "./useJoinGame";
 import { useMapConfig } from "./useMapConfig";
 
 export const GameBoard = () => {
+  const mapConfig = useMapConfig();
+  const rows = new Array(mapConfig.height).fill(0).map((_, i) => i);
+  const columns = new Array(mapConfig.width).fill(0).map((_, i) => i);
+
   const {
     components: { Position },
     playerEntity,
   } = useMUD();
 
-  const mapConfig = useMapConfig();
-  const rows = new Array(mapConfig.height).fill(0).map((_, i) => i);
-  const columns = new Array(mapConfig.width).fill(0).map((_, i) => i);
-
-  const { canJoinGame, joinGame } = useJoinGame();
   const playerPosition = useComponentValue(Position, playerEntity);
   useMovement();
+  const { canJoinGame, joinGame } = useJoinGame();
 
   return (
     <div className="inline-grid p-2 bg-lime-500">

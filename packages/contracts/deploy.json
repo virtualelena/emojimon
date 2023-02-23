@@ -1,7 +1,5 @@
 {
-  "components": [
-  "EncounterTriggerComponent",
-  "MapConfigComponent", 
+  "components": ["MapConfigComponent", 
   "MovableComponent",
   "ObstructionComponent", 
   "PlayerComponent", 
@@ -15,11 +13,7 @@
     
     {
       "name": "JoinGameSystem",
-      "writeAccess": [
-      "EncounterTriggerComponent", 
-      "MovableComponent", 
-      "PlayerComponent", 
-      "PositionComponent"]
+      "writeAccess": ["MovableComponent", "PlayerComponent", "PositionComponent"]
     },
     {
       "name": "MoveSystem",

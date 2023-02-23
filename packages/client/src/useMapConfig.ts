@@ -8,11 +8,11 @@ export const useMapConfig = () => {
     components: { MapConfig },
     singletonEntity,
   } = useMUD();
+
   const mapConfig = getComponentValue(MapConfig, singletonEntity);
+
   if (mapConfig == null) {
-    throw new Error(
-      "game config not set or not ready, only use this hook after loading state === LIVE"
-      );
+    throw new Error("game config not set or not ready, only use this hook after loading state === LIVE");
   }
 
   const { width, height, terrain } = mapConfig;
@@ -25,4 +25,5 @@ export const useMapConfig = () => {
 
   return { width, height, terrain, terrainValues };
 
+  return mapConfig;
 };
