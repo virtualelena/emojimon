@@ -5,6 +5,7 @@ import { getAddressById } from "solecs/utils.sol";
 import { MapConfigComponent, ID as MapConfigComponentID, MapConfig } from "components/MapConfigComponent.sol";
 import { PositionComponent, ID as PositionComponentID, Coord } from "components/PositionComponent.sol";
 import { ObstructionComponent, ID as ObstructionComponentID } from "components/ObstructionComponent.sol";
+import { EncounterTriggerComponent, ID as EncounterTriggerComponentID } from "components/EncounterTriggerComponent.sol";
 import { TerrainType } from "../TerrainType.sol";
 
 uint256 constant ID = uint256(keccak256("system.Init"));
@@ -18,8 +19,11 @@ contract InitSystem is System {
 
     PositionComponent position = PositionComponent(getAddressById(components, PositionComponentID));
     ObstructionComponent obstruction = ObstructionComponent(getAddressById(components, ObstructionComponentID));
+    EncounterTriggerComponent encounterTrigger = EncounterTriggerComponent(
+      getAddressById(components, EncounterTriggerComponentID)
+    );
 
-    // Alias these to make it easier to draw the terrain map
+    // Alias these to make em easier to draw a tile map
     TerrainType O = TerrainType.None;
     TerrainType T = TerrainType.TallGrass;
     TerrainType B = TerrainType.Boulder;
@@ -58,14 +62,16 @@ contract InitSystem is System {
 
         terrain[(y * width) + x] = bytes1(uint8(terrainType));
 
+        uint256 entity = world.getUniqueEntityId();
+        position.set(entity, Coord(int32(x), int32(y)));
         if (terrainType == TerrainType.Boulder) {
-          uint256 entity = world.getUniqueEntityId();
-          position.set(entity, Coord(int32(x), int32(y)));
           obstruction.set(entity);
+        } else if (terrainType == TerrainType.TallGrass) {
+          encounterTrigger.set(entity);
         }
       }
     }
 
-    mapConfig.set(MapConfig({ width: width, height: height, terrain: terrain }));
+    mapConfig.set(MapConfig({ width: width, height: height, terrain: bytes(terrain) }));
   }
 }
