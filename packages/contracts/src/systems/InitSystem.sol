@@ -6,6 +6,7 @@ import { MapConfigComponent, ID as MapConfigComponentID, MapConfig } from "compo
 import { PositionComponent, ID as PositionComponentID, Coord } from "components/PositionComponent.sol";
 import { ObstructionComponent, ID as ObstructionComponentID } from "components/ObstructionComponent.sol";
 import { TerrainType } from "../TerrainType.sol";
+import { EncounterTriggerComponent, ID as EncounterTriggerComponentID } from "components/EncounterTriggerComponent.sol";
 
 uint256 constant ID = uint256(keccak256("system.Init"));
 
@@ -18,6 +19,9 @@ contract InitSystem is System {
 
     PositionComponent position = PositionComponent(getAddressById(components, PositionComponentID));
     ObstructionComponent obstruction = ObstructionComponent(getAddressById(components, ObstructionComponentID));
+    EncounterTriggerComponent encounterTrigger = EncounterTriggerComponent(
+      getAddressById(components, EncounterTriggerComponentID)
+    );
 
     // Alias these to make it easier to draw the terrain map
     TerrainType O = TerrainType.None;
@@ -62,6 +66,10 @@ contract InitSystem is System {
           uint256 entity = world.getUniqueEntityId();
           position.set(entity, Coord(int32(x), int32(y)));
           obstruction.set(entity);
+        } else if (terrainType == TerrainType.TallGrass) {
+          uint256 entity = world.getUniqueEntityId();
+          position.set(entity, Coord(int32(x), int32(y)));
+          encounterTrigger.set(entity);
         }
       }
     }

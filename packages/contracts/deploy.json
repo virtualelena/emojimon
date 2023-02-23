@@ -1,13 +1,16 @@
 {
-  "components": ["MapConfigComponent", 
-  "MovableComponent",
-  "ObstructionComponent", 
-  "PlayerComponent", 
-  "PositionComponent"],
+  "components": [
+    "EncounterTriggerComponent",
+    "MapConfigComponent", 
+    "MovableComponent",
+    "ObstructionComponent", 
+    "PlayerComponent", 
+    "PositionComponent"
+  ],
   "systems": [
     {
       "name": "InitSystem",
-      "writeAccess": ["MapConfigComponent", "ObstructionComponent", "PositionComponent"],
+      "writeAccess": ["EncounterTriggerComponent", "MapConfigComponent", "ObstructionComponent", "PositionComponent"],
       "initialize": "new bytes(0)"
     },
     
